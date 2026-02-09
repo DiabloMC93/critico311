@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Cetoacidosis Diabética (CAD)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0c0a09;
+            color: #f5f5f4;
+        }
+
+        .glass-card {
+            background: rgba(28, 25, 23, 0.8);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .option-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(41, 37, 36, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: rgba(68, 64, 60, 0.8);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        .correct {
+            background-color: #064e3b !important;
+            border-color: #10b981 !important;
+            color: #d1fae5 !important;
+        }
+
+        .incorrect {
+            background-color: #450a0a !important;
+            border-color: #ef4444 !important;
+            color: #fee2e2 !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div id="app" class="w-full max-w-3xl">
+        <div id="quiz-screen">
+            <div class="mb-8">
+                <div class="flex justify-between items-end mb-4 px-1">
+                    <div>
+                        <h1 class="text-xs font-bold text-orange-400 uppercase tracking-widest mb-1">Patología Metabólica Crítica</h1>
+                        <span id="question-index" class="text-2xl font-bold text-white">Pregunta 1 de 26</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="bg-stone-900 px-3 py-1 rounded-lg border border-stone-800 text-center min-w-[60px]">
+                            <span class="text-[10px] text-green-500 font-bold uppercase block">Bien</span>
+                            <span id="score-correct" class="text-green-400 font-bold text-xl">0</span>
+                        </div>
+                        <div class="bg-stone-900 px-3 py-1 rounded-lg border border-stone-800 text-center min-w-[60px]">
+                            <span class="text-[10px] text-red-500 font-bold uppercase block">Mal</span>
+                            <span id="score-incorrect" class="text-red-400 font-bold text-xl">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full bg-stone-900 h-2 rounded-full overflow-hidden">
+                    <div id="progress-fill" class="h-full bg-gradient-to-r from-orange-500 to-red-600 w-0 transition-all duration-500"></div>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 md:p-10 rounded-3xl mb-6 shadow-2xl">
+                <h2 id="question-text" class="text-lg md:text-xl font-semibold mb-8 text-stone-100 leading-tight"></h2>
+                <div id="options-container" class="grid gap-3"></div>
+            </div>
+            
+            <div class="flex justify-center">
+                <button id="next-btn" onclick="quiz.next()" class="hidden bg-white text-black px-12 py-4 rounded-2xl font-bold hover:bg-stone-200 transition-all shadow-xl active:scale-95">
+                    Siguiente Pregunta
+                </button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="hidden glass-card p-12 rounded-[2.5rem] text-center">
+            <h2 class="text-3xl font-bold mb-4 text-white">Resultados: CAD</h2>
+            <div class="flex justify-center gap-8 mb-8">
+                <div>
+                    <p class="text-stone-500 text-sm mb-1 uppercase">Aciertos</p>
+                    <p id="final-correct" class="text-5xl font-bold text-green-400">0</p>
+                </div>
+                <div>
+                    <p class="text-stone-500 text-sm mb-1 uppercase">Errores</p>
+                    <p id="final-incorrect" class="text-5xl font-bold text-red-400">0</p>
+                </div>
+            </div>
+            <button onclick="location.reload()" class="w-full bg-orange-600 hover:bg-orange-500 text-white py-5 rounded-2xl font-bold text-lg">
+                Reiniciar Test
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "1. Cuando se produce un déficit de insulina, el cual conduce a una hiperglucemia y acidosis, la cual es derivada del aumento de la oxidación de los ácidos grasos hacia cuerpos cetónicos estamos hablando de:", a: ["Lesión renal aguda.", "Diabetes Mellitus.", "Cetoacidosis diabética.", "Crisis hipertensiva."], c: 2 },
+            { q: "2. La fluidoterapia tiene un papel importante en el tratamiento de la cetoacidosis diabética. ¿Cuál es su objetivo?", a: ["Reposición de líquidos en general.", "Subir los niveles de glucosa en sangre", "Expansión de volumen intravascular y extravascular, así como, el nivel de la función renal.", "Expansión de volumen intravascular y extravascular, así como, el nivel de la función del huga"], c: 2 },
+            { q: "3. Manifestaciones clínicas más frecuentes de la cetoacidosis diabética. Señala la INCORRECTA", a: ["Nicturia, Polidipsia", "Deshidratación, Polidipsia", "Polidipsia, Nicturia y deshidratación", "Deshidratación, Polidipsia y poliuria"], c: 2 },
+            { q: "4. La CAD es propia de:", a: ["niños", "mujeres con trastornos alimenticios", "personas que abandonan la insulina", "todas son correctas"], c: 3 },
+            { q: "5. Objetivo de la rehidratación en cetoacidosis diabética:", a: ["Corregir la acidosis.", "Corregir la hiperglucemia", "Corregir la alcalosis.", "Ninguna es correcta."], c: 1 },
+            { q: "6. Indica la INCORRECTA con respecto a la fisiopatología de la cetoacidosis diabética:", a: ["Ocurre en la DM tipo 2, raramente en la DM tipo 1.", "Hay un aumento del glucagón y una disminución de la insulina.", "La cetosis secundaria provoca una incapacidad para utilizar la glucosa.", "La mortalidad es menor del 1% en los pacientes tratados de forma hospitalaria."], c: 0 },
+            { q: "7. Dentro de la clínica ¿Cuál es un signo específico en la cetoacidosis diabética?", a: ["Nerviosismo", "Hipertermia", "Respiración de Kussmaul", "Hipoglucemia"], c: 2 },
+            { q: "8. El nivel de cuidados y actuaciones en un paciente con cetoacidosis diabética dependerá de (señale la INCORRECTA):", a: ["El estado de su nivel de conciencia", "El nivel de glucosa", "El balance de líquidos", "El estado metabólico"], c: 1 },
+            { q: "9. ¿Qué patología es una complicación severa de la DM?:", a: ["Shock diabético.", "Cetoacidosis diabética.", "DM tipo 1.", "DM tipo 2."], c: 1 },
+            { q: "10. Además de los signos y síntomas principales de la cetoacidosis diabética, ¿Cuáles más pueden darse?. Indica la INCORRECTA:", a: ["Aliento con olor afrutado.", "Confusión y cansancio constante.", "Periodos de diarrea alternando con otros de estreñimiento.", "Disnea."], c: 2 },
+            { q: "11. Indica la INCORRECTA con respecto a las complicaciones en la cetoacidosis diabética:", a: ["Trombosis", "Hipertensión", "Edema cerebral.", "Fracaso renal agudo."], c: 1 },
+            { q: "12. Cuáles de los siguientes electrolitos son utilizados en la actuación frente a la cetoacidosis diabética:", a: ["Potasio y fosfato", "Potasio y sodio", "Sodio y calcio", "Cloro y fosfato."], c: 0 },
+            { q: "13. Entre los objetivos del tratamiento de un paciente con cetoacidosis, se encuentran:", a: ["Restaurar el volumen circundante", "Corregir el desequilibrio electrolítico", "Corregir cetoacidosis e hiperglucemia", "Todas son correctas."], c: 3 },
+            { q: "14. Con respecto al tratamiento con insulina en un paciente con cetoacidosis señala la respuesta correcta:", a: ["Durante los primeros 30 minutos de la rehidratación la glucemia puede ascender.", "La insulina no es necesaria para normalizar la glucemia.", "La administración de insulina no debe iniciarse hasta que la hipovolemia haya sido corregida.", "El objetivo es subir la glucemia."], c: 2 },
+            { q: "15. Dentro de la Clínica de la Cetoacidosis diabética, los valores de Bicarbonato sérico oscilarán sobre:", a: ["< 20 mEq/l.", "< 10 mEq/l.", "> 20 mEq/l.", "< 5 mEq/l."], c: 3 },
+            { q: "16. El déficit de líquidos que se produce en la Cetoacidosis diabética suele ser de:", a: ["25-50 ml/kg.", "50-100 ml/kg.", "100-150 ml/kg.", "125.150 ml/kg."], c: 1 },
+            { q: "17. Tratamiento de la cetoacidosis diabética:", a: ["Fluidoterapia, insulina, Reposición de electrolitos.", "Fluidoterapia, insulina, Bicarbonato sódico .", "Fluidoterapia, insulina lenta, Reposición de electrolitos.", "Insulina."], c: 0 },
+            { q: "18. La cetoacidosis tiene una mortalidad:", a: ["Tiene una mortalidad bastante alta.", "1% Si se coge en un centro hospitalario", "35% Si se coge en un centro hospitalario", "Tiene mortalidad nula"], c: 1 },
+            { q: "19. La cetoacidosis es una acumulación tóxica en sangre y orina de:", a: ["Azúcar", "Grasas", "Linfocitos T", "Cetonas"], c: 3 },
+            { q: "20. Un paciente con cetoacidosis diabética presenta respiración de kussmaul porque:", a: ["tiene ansiedad", "para compensar la acidosis diabética", "presenta dolor", "ninguna de las anteriores es correcta"], c: 1 },
+            { q: "21. Cual es la verdadera:", a: ["La acidosis se corrige con insulina", "La acidosis se corrige con insulina", "La acidosis puede originar una falsa hiperK+.", "Todas son correctas"], c: 3 },
+            { q: "22. ¿Qué órgano no es insulinosensible?", a: ["Hígado.", "Tejido cerebral.", "Músculo.", "Tejido adiposo."], c: 1 },
+            { q: "23. Síntomas de la cetoacidosis diabética, señala la falsa:", a: ["Aliento con olor a frutas.", "Visión borrosa.", "Polidipsia.", "Anuria."], c: 3 },
+            { q: "24. Para realizar un buen cuidado de enfermería es necesario, señale la falsa:", a: ["Mantener la integridad de la piel.", "Prevención de infecciones.", "No es necesario un sondaje vesical.", "ECG."], c: 2 },
+            { q: "25. Debemos tener para el tratamiento de la CAD dos accesos venosos para:", a: ["Infusión de fluidoterapia y la insulina por separado.", "Infusión de fluidoterapia S. Glucosado y S. hipertónico.", "Infusión de fluidoterapia a mayor cantidad.", "Infusión de fluidoterapia y compuestos hemodinámicos."], c: 0 },
+            { q: "26. Es importante hacer un ECG a un paciente con CAD por:", a: ["Hiponatremia.", "Hipopotasemia.", "Hipertensión.", "A y b son correctas."], c: 1 }
+        ];
+
+        class Quiz {
+            constructor() {
+                this.idx = 0;
+                this.correct = 0;
+                this.incorrect = 0;
+                this.answered = false;
+            }
+
+            render() {
+                this.answered = false;
+                const q = questions[this.idx];
+                document.getElementById('question-index').innerText = `Pregunta ${this.idx + 1} de ${questions.length}`;
+                document.getElementById('question-text').innerText = q.q;
+                document.getElementById('next-btn').classList.add('hidden');
+                document.getElementById('progress-fill').style.width = `${((this.idx + 1) / questions.length) * 100}%`;
+                
+                const container = document.getElementById('options-container');
+                container.innerHTML = '';
+                q.a.forEach((opt, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn w-full text-left p-4 md:p-5 rounded-2xl font-medium text-stone-300';
+                    btn.innerText = opt;
+                    btn.onclick = () => this.check(i, btn);
+                    container.appendChild(btn);
+                });
+            }
+
+            updateScores() {
+                document.getElementById('score-correct').innerText = this.correct;
+                document.getElementById('score-incorrect').innerText = this.incorrect;
+            }
+
+            check(i, btn) {
+                if (this.answered) return;
+                this.answered = true;
+                const correctIdx = questions[this.idx].c;
+                const btns = document.querySelectorAll('.option-btn');
+                
+                if (i === correctIdx) {
+                    this.correct++;
+                    btn.classList.add('correct');
+                } else {
+                    this.incorrect++;
+                    btn.classList.add('incorrect');
+                    btns[correctIdx].classList.add('correct');
+                }
+                
+                this.updateScores();
+                btns.forEach(b => b.disabled = true);
+                document.getElementById('next-btn').classList.remove('hidden');
+            }
+
+            next() {
+                this.idx++;
+                if (this.idx < questions.length) {
+                    this.render();
+                } else {
+                    this.finish();
+                }
+            }
+
+            finish() {
+                document.getElementById('quiz-screen').classList.add('hidden');
+                document.getElementById('result-screen').classList.remove('hidden');
+                document.getElementById('final-correct').innerText = this.correct;
+                document.getElementById('final-incorrect').innerText = this.incorrect;
+            }
+        }
+
+        const quiz = new Quiz();
+        window.onload = () => quiz.render();
+    </script>
+</body>
+</html>
